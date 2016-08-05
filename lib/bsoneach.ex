@@ -25,7 +25,7 @@ defmodule BSONEach do
     iterate({io, next, func})
   end
 
-  defp iterate({io, <<_::binary>> = acc, func}) do
+  defp iterate({{:file_descriptor, :prim_file, _} = io, <<_::binary>> = acc, func}) do
     case IO.binread(io, @chunk_size) do
       data when is_binary(data) ->
         iterate({io, acc <> data, func})

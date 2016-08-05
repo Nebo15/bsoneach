@@ -17,7 +17,7 @@ defmodule Mix.Tasks.EachSamples do
 
     path
     |> File.open!([:read, :binary, :raw])
-    |> BSONEach.map(&IO.inspect/1)
+    |> BSONEach.each(&IO.inspect/1)
     |> File.close
 
     IO.inspect "Done"
