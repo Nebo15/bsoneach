@@ -9,7 +9,7 @@ This module aims on reading large BSON files with low memory consumption. It pro
   * This module archives low memory usage (on my test environment its constantly consumes 28.1 Mb on a 1.47 GB fixture with 1 000 000 BSON documents).
   * Correlation between file size and parse time is linear. (You can check it by running ```mix bench```).
   * BSONEach is CPU-bounded. Consumes 98% of CPU resources on my test environment.
-  * (```time``` is not a best way to test this, but..) on large files BSONEach works 2 times faster comparing to loading whole file in memory and iterating over it:
+  * (```time``` is not a best way to test this, but..) on large files BSONEach works almost 2 times faster comparing to loading whole file in memory and iterating over it:
 
     Generate a fixture:
 
@@ -53,7 +53,7 @@ It's available on [hex.pm](https://hex.pm/packages/bsoneach)) and can be install
 
   Open file and pass iostream to a ```BSONEach.each(func)``` function:
 
-    ```elixir
+    ```
     path # File path
     |> File.open!([:read, :binary, :raw]) # Open file in :binary, :raw mode
     |> BSONEach.each(&process_bson_document/1) # Send IO.device to BSONEach.each function and pass a callback
@@ -64,7 +64,7 @@ It's available on [hex.pm](https://hex.pm/packages/bsoneach)) and can be install
 
   Callback function should receive a struct:
 
-    ```elixir
+    ```
     def process_bson_document(%{} = document) do
       # Do stuff with a document
       IO.inspect document
