@@ -78,7 +78,7 @@ defmodule BSONEach do
   end
 
   defp get_error(_error) do
-    # TODO: Possible values
+    # TODO: Map possible error reasons
     # [_ | :"document size"] = _error
     {:parse_error, :corrupted_document}
   end
