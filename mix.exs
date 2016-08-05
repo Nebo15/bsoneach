@@ -1,11 +1,11 @@
-defmodule BSONMap.Mixfile do
+defmodule BSONEach.Mixfile do
   use Mix.Project
 
   @version "0.1.0"
 
   def project do
-    [app: :bsonmap,
-     description: ".",
+    [app: :bsoneach,
+     description: "Applies a function to each document in a BSON file.",
      package: package,
      version: @version,
      elixir: "~> 1.3",
@@ -35,7 +35,7 @@ defmodule BSONMap.Mixfile do
     [contributors: ["Andrew Dryga"],
      maintainers: ["Andrew Dryga"],
      licenses: ["MIT"],
-     links: %{github: "https://github.com/Nebo15/bsonmap"},
+     links: %{github: "https://github.com/Nebo15/bsoneach"},
      files: ~w(lib LICENSE.md mix.exs README.md)]
   end
 end

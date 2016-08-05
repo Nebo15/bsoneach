@@ -1,6 +1,6 @@
-defmodule BSONMapTest do
+defmodule BSONEachTest do
   use ExUnit.Case
-  doctest BSONMap
+  doctest BSONEach
 
   test "the truth" do
     assert 1 + 1 == 2

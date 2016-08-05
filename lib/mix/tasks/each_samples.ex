@@ -1,6 +1,6 @@
-defmodule Mix.Tasks.MapSamples do
+defmodule Mix.Tasks.EachSamples do
   use Mix.Task
-  alias BSONMap
+  alias BSONEach
 
   @moduledoc """
     This module defines a task to IO.inspect all documents in a sample BSON file.
@@ -10,14 +10,14 @@ defmodule Mix.Tasks.MapSamples do
         $ mix map_samples test.bson
   """
 
-  @shortdoc "Parse a sample BSON file and print out all documents with a BSONMap.map function."
+  @shortdoc "Parse a sample BSON file and print out all documents with a BSONEach.each function."
 
   def run(args) do
     [path] = args
 
     path
     |> File.open!([:read, :binary, :raw])
-    |> BSONMap.map(&IO.inspect/1)
+    |> BSONEach.map(&IO.inspect/1)
     |> File.close
 
     IO.inspect "Done"
