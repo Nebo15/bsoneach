@@ -16,40 +16,24 @@ defmodule BSONMap do
 
   @spec map(IO.device, Func) :: IO.iodata | IO.nodata
   def map(io, func) when is_function(func) do
-    map_portion({io, <<>>, func})
+    iterate({io, <<>>, func})
   end
 
-  defp map_portion({io, <<>>, func}) do
-    read_and_continue({io, <<>>, func})
-  end
-
-  defp map_portion({io, <<size::32-little-signed, _::binary>> = acc, func}) when byte_size(acc) > size do
+  defp iterate({io, <<size::32-little-signed, _::binary>> = acc, func}) when byte_size(acc) >= size do
     {doc, next} = decode(acc)
 
     func.(doc)
 
-    map_portion({io, next, func})
+    iterate({io, next, func})
   end
 
-  defp map_portion({io, <<size::32-little-signed, _::binary>> = acc, func}) when byte_size(acc) == size do
-    {doc, next} = decode(acc)
-
-    func.(doc)
-
-    read_and_continue({io, next, func})
-  end
-
-  defp map_portion({io, <<size::32-little-signed, _::binary>> = acc, func}) when byte_size(acc) < size do
-    read_and_continue({io, acc, func})
-  end
-
-  defp read_and_continue({io, acc, func}, size \\ @chunk_size) do
+  defp iterate({io, <<_::binary>> = acc, func}, size \\ @chunk_size) do
     case IO.binread(io, size) do
       data when is_binary(data) ->
-        map_portion({io, acc <> data, func})
+        iterate({io, acc <> data, func})
       :eof ->
         io
-      err ->
+      _err ->
         io
     end
   end

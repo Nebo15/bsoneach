@@ -20,11 +20,11 @@ defmodule Mix.Tasks.ReadSamples do
     |> print_stream
   end
 
-  defp stream_decoder({:ok, bin}) do
+  def stream_decoder({:ok, bin}) do
     Stream.unfold(bin, &decode_element/1)
   end
 
-  defp stream_decoder({:error, reason}) do
+  def stream_decoder({:error, reason}) do
     {:error, reason}
   end
 
