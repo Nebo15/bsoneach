@@ -1,6 +1,6 @@
 defmodule BSONEach do
   @moduledoc """
-    This module allows to apply each function to each document in a BSON file.
+    This module allows to apply ```callback``` function to each document in a BSON file.
 
     Source file should be opened in :binary mode.
 
