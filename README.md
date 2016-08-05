@@ -31,7 +31,7 @@ This module aims on reading large BSON files with low memory consumption. It pro
 
 ## Installation
 
-It's available on [hex.pm](https://hex.pm/packages/bsoneach)) and can be installed as project dependency:
+It's available on [hex.pm](https://hex.pm/packages/bsoneach) and can be installed as project dependency:
 
   1. Add `bsoneach` to your list of dependencies in `mix.exs`:
 
@@ -51,9 +51,9 @@ It's available on [hex.pm](https://hex.pm/packages/bsoneach)) and can be install
 
 ## How to use
 
-  Open file and pass iostream to a ```BSONEach.each(func)``` function:
+  1. Open file and pass iostream to a ```BSONEach.each(func)``` function:
 
-    ```
+    ```elixir
     path # File path
     |> File.open!([:read, :binary, :raw]) # Open file in :binary, :raw mode
     |> BSONEach.each(&process_bson_document/1) # Send IO.device to BSONEach.each function and pass a callback
@@ -62,13 +62,13 @@ It's available on [hex.pm](https://hex.pm/packages/bsoneach)) and can be install
 
   File is read by 4096 byte chunks in ```:raw```, ```:binary``` modes, iterating over all documents till the end of file is reached.
 
-  Callback function should receive a struct:
+  2. Callback function should receive a struct:
 
-    ```
+    ```elixir
     def process_bson_document(%{} = document) do
       # Do stuff with a document
       IO.inspect document
     end
     ```
 
-  When you process large files its a good thing to process documents asynchronously, you can find more info [here](http://elixir-lang.org/docs/stable/elixir/Task.html).
+When you process large files its a good thing to process documents asynchronously, you can find more info [here](http://elixir-lang.org/docs/stable/elixir/Task.html).
