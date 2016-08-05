@@ -28,7 +28,7 @@ defmodule Mix.Tasks.GenerateFixture do
     IO.inspect "Generated a fixture with " <> Integer.to_string(size) <> " document(s)."
   end
 
-  def create_list_record() do
+  def create_list_record do
     %{
       "id" => trunc(:rand.uniform()*100000000),
       "company_name" => "vivus.es",
