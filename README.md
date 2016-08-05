@@ -60,7 +60,7 @@ It's available on [hex.pm](https://hex.pm/packages/bsoneach)) and can be install
     |> File.close # Don't forget to close referenced file
     ```
 
-    File is read by 4096 byte chunks in ```:raw```, ```:binary``` modes, iterating over all documents till the end of file is reached.
+  File is read by 4096 byte chunks in ```:raw```, ```:binary``` modes, iterating over all documents till the end of file is reached.
 
   Callback function should receive a struct:
 
