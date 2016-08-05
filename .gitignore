@@ -16,5 +16,8 @@ erl_crash.dump
 # Also ignore archive artifacts (built via "mix archive.build").
 *.ez
 
-# Don't send benchmark snapshots
+# Don't commit benchmark snapshots
 bench/snapshots
+
+# Don't commit largest fixture
+test/fixtures/1000000.bson
