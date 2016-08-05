@@ -2,11 +2,11 @@ defmodule Mix.Tasks.PrintRead do
   use Mix.Task
 
   @moduledoc """
-    This module defines a task that loads a whole BSON fixture and prints out all documents.
+  This module defines a task that loads a whole BSON fixture and prints out all documents.
 
-    ## Examples
+  ## Examples
 
-        $ mix print_read test.bson
+      $ mix print_read test.bson
   """
 
   @shortdoc "Load a whole BSON fixture and print out all documents."
@@ -20,6 +20,7 @@ defmodule Mix.Tasks.PrintRead do
     |> print_stream
   end
 
+  @doc false
   def stream_decoder({:ok, bin}) do
     Stream.unfold(bin, &decode_element/1)
   end

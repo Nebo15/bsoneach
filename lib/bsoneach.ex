@@ -1,38 +1,38 @@
 defmodule BSONEach do
   @moduledoc """
-    This module allows to apply ```callback``` function to each document in a BSON file.
+  This module allows to apply ```callback``` function to each document in a BSON file.
 
-    Source file should be opened in :binary mode.
+  Source file should be opened in :binary mode.
 
-    ## Examples
+  ## Examples
 
-        "sample.bson"
-        |> File.open!([:read, :binary, :raw])
-        |> BSONEach.each(&IO.inspect/1)
-        |> File.close
+      "sample.bson"
+      |> File.open!([:read, :binary, :raw])
+      |> BSONEach.each(&IO.inspect/1)
+      |> File.close
   """
 
   @chunk_size 4096
 
   @doc """
-    This module allows to apply ```callback``` function to each document in a BSON file.
+  This module allows to apply ```callback``` function to each document in a BSON file.
 
-    Source file should be opened in `:binary`, `:raw` modes.
+  Source file should be opened in `:binary`, `:raw` modes.
 
-    ## Examples
+  It returns:
 
-        "sample.bson"
-        |> File.open!([:read, :binary, :raw])
-        |> BSONEach.each(&IO.inspect/1)
-        |> File.close
+  * `io_device` - when file is parsed successfully.
+  * `{:parse_error, reason}` - in case there was an error while parsing BSON document.
+  Possible reasons: `:corrupted_document`.
+  * `{:io_error, reason}` - in case [IO.binstream](http://elixir-lang.org/docs/stable/elixir/IO.html#binread/2)
+  returned an error.
 
-    It returns:
+  ## Examples
 
-      * `io_device` - when file is parsed successfully.
-      * `{:parse_error, reason}` - in case there was an error while parsing BSON document.
-      Possible reasons: `:corrupted_document`.
-      * `{:io_error, reason}` - in case [IO.binstream](http://elixir-lang.org/docs/stable/elixir/IO.html#binread/2)
-      returned an error.
+      "sample.bson"
+      |> File.open!([:read, :binary, :raw])
+      |> BSONEach.each(&IO.inspect/1)
+      |> File.close
   """
   @spec each(IO.device, Func) :: IO.iodata | IO.nodata
   def each(io, func) when is_function(func) do

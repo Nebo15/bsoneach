@@ -2,11 +2,11 @@ defmodule Mix.Tasks.GenerateFixture do
   use Mix.Task
 
   @moduledoc """
-    This module defines a task to generate sample BSON file that can be used as fixture.
+  This module defines a task to generate sample BSON file that can be used as fixture.
 
-    ## Examples
+  ## Examples
 
-        $ mix generate_fixture 3 test.bson
+      $ mix generate_fixture 3 test.bson
   """
 
   @shortdoc "Generate a BSON fixture."
@@ -28,7 +28,7 @@ defmodule Mix.Tasks.GenerateFixture do
     IO.inspect "Generated a fixture with " <> Integer.to_string(size) <> " document(s)."
   end
 
-  def create_list_record do
+  defp create_list_record do
     %{
       "id" => trunc(:rand.uniform()*100000000),
       "company_name" => "vivus.es",
@@ -115,7 +115,7 @@ defmodule Mix.Tasks.GenerateFixture do
     }
   end
 
-  def create_sample_list(i) when i > 0 do
+  defp create_sample_list(i) when i > 0 do
     i
     |> (&Range.new(1, &1)).()
     |> Stream.map(fn _ -> create_list_record() end)
