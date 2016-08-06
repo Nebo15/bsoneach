@@ -16,19 +16,19 @@ File is read by 4096 byte chunks, BSONEach iterates over all documents till the 
     Generate a fixture:
 
     ```bash
-    $ mix generate_samples 1000000 test/fixtures/1000000.bson
+    $ mix generate_fixture 1000000 test/fixtures/1000000.bson
     ```
 
     Run different task types:
 
     ```bash
-    $ time mix read_samples test/fixtures/1000000.bson
-    mix read_samples test/fixtures/1000000.bson  994.60s user 154.40s system 87% cpu 21:51.88 total
+    $ time mix print_read test/fixtures/1000000.bson
+    mix print_read test/fixtures/1000000.bson  994.60s user 154.40s system 87% cpu 21:51.88 total
     ```
 
     ```bash
-    $ time mix each_samples test/fixtures/1000000.bson
-    mix each_samples test/fixtures/1000000.bson  583.67s user 66.86s system 75% cpu 14:27.26 total
+    $ time mix print_each test/fixtures/1000000.bson
+    mix print_each test/fixtures/1000000.bson  583.67s user 66.86s system 75% cpu 14:27.26 total
     ```
 
 ## Installation
