@@ -31,6 +31,41 @@ File is read by 4096 byte chunks, BSONEach iterates over all documents till the 
     mix print_each test/fixtures/1000000.bson  583.67s user 66.86s system 75% cpu 14:27.26 total
     ```
 
+  * Pass a file to BSONEach instead of streams, since streamed implementation works so much-much slower:
+
+    ```bash
+    $ mix bench
+    Compiling 1 file (.ex)
+
+    Settings:
+      duration:      1.0 s
+
+    ## EachBench
+    [15:02:11] 1/10: read and iterate 1 document
+    [15:02:12] 2/10: read and iterate 30 documents
+    [15:02:15] 3/10: read and iterate 300 documents
+    [15:02:18] 4/10: read and iterate 30_000 documents
+    [15:02:21] 5/10: read and iterate 3_000 documents
+    [15:02:23] 6/10: stream and iterate 1 document
+    [15:02:26] 7/10: stream and iterate 30 documents
+    [15:02:28] 8/10: stream and iterate 300 documents
+    [15:02:30] 9/10: stream and iterate 30_000 documents
+    [15:04:37] 10/10: stream and iterate 3_000 documents
+    Finished in 151.93 seconds
+
+    ## EachBench
+    read and iterate 1 document               10000   140.63 µs/op
+    stream and iterate 1 document             10000   190.69 µs/op
+    read and iterate 30 documents              1000   2601.48 µs/op
+    stream and iterate 30 documents             500   3198.02 µs/op
+    read and iterate 300 documents              100   25354.27 µs/op
+    stream and iterate 300 documents             50   41764.02 µs/op
+    read and iterate 3_000 documents             10   252262.90 µs/op
+    read and iterate 30_000 documents             1   2514610.00 µs/op
+    stream and iterate 3_000 documents            1   6238468.00 µs/op
+    stream and iterate 30_000 documents           1   126495171.00 µs/op
+    ```
+
 ## Installation
 
 It's available on [hex.pm](https://hex.pm/packages/bsoneach) and can be installed as project dependency:

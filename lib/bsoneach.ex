@@ -17,7 +17,7 @@ defmodule BSONEach do
   @doc """
   This module allows to apply ```callback``` function to each document in a BSON file.
 
-  Source file should be opened in `:binary`, `:raw` modes.
+  Source file should be opened in `:binary`, `:raw` modes. BSONEach can accept file streams.
 
   It returns:
 
@@ -39,17 +39,19 @@ defmodule BSONEach do
     iterate({io, <<>>, func})
   end
 
-  defp iterate({io, <<size::32-little-signed, _::binary>> = acc, func}) when byte_size(acc) >= size do
+  defp iterate(recursion_data, index \\ 0)
+
+  defp iterate({io, <<size::32-little-signed, _::binary>> = acc, func}, index) when byte_size(acc) >= size do
     case decode(acc) do
       {doc, next} ->
         func.(doc)
-        iterate({io, next, func})
+        iterate({io, next, func}, index)
       %Bson.Decoder.Error{what: error} ->
         get_error(error)
     end
   end
 
-  defp iterate({{:file_descriptor, :prim_file, _} = io, <<_::binary>> = acc, func}) do
+  defp iterate({{:file_descriptor, :prim_file, _} = io, <<_::binary>> = acc, func}, _) do
     case IO.binread(io, @chunk_size) do
       data when is_binary(data) ->
         iterate({io, acc <> data, func})
@@ -60,18 +62,16 @@ defmodule BSONEach do
     end
   end
 
-  # TODO: implement File.Stream iteration
-  # defp iterate({%File.Stream{} = io, <<_::binary>> = acc, func}) do
-  #   case Enum.take(io, 1) do
-  #     [data] when is_binary(data) ->
-  #       iterate({io, acc <> data, func})
-  #     :eof ->
-  #       io
-  #     err ->
-  #       IO.inspect err
-  #       io
-  #   end
-  # end
+  defp iterate({%File.Stream{} = io, <<_::binary>> = acc, func}, index) do
+    case Enum.at(io, index, :none) do
+      data when is_binary(data) ->
+        iterate({io, acc <> data, func}, index+1)
+      :none ->
+        io
+      ^index ->
+        io
+    end
+  end
 
   defp decode(acc) do
     Bson.Decoder.document(acc, %Bson.Decoder{})

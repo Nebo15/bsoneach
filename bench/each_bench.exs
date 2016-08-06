@@ -11,37 +11,72 @@ defmodule EachBench do
     ]
   end
 
-  bench "read and map 1 document", [fixtures: get_fixtures()] do
+  bench "read and iterate 1 document", [fixtures: get_fixtures()] do
     fixtures[:single]
     |> File.open!([:read, :binary, :raw])
     |> BSONEach.each(&foo/1)
     |> File.close
   end
 
-  bench "read and map 30 documents", [fixtures: get_fixtures()] do
+  bench "read and iterate 30 documents", [fixtures: get_fixtures()] do
     fixtures[:small]
     |> File.open!([:read, :binary, :raw])
     |> BSONEach.each(&foo/1)
     |> File.close
   end
 
-  bench "read and map 300 documents", [fixtures: get_fixtures()] do
+  bench "read and iterate 300 documents", [fixtures: get_fixtures()] do
     fixtures[:medium]
     |> File.open!([:read, :binary, :raw])
     |> BSONEach.each(&foo/1)
     |> File.close
   end
 
-  bench "read and map 3_000 documents", [fixtures: get_fixtures()] do
+  bench "read and iterate 3_000 documents", [fixtures: get_fixtures()] do
     fixtures[:large]
     |> File.open!([:read, :binary, :raw])
     |> BSONEach.each(&foo/1)
     |> File.close
   end
 
-  bench "read and map 30_000 documents", [fixtures: get_fixtures()] do
+  bench "read and iterate 30_000 documents", [fixtures: get_fixtures()] do
     fixtures[:xlarge]
     |> File.open!([:read, :binary, :raw])
+    |> BSONEach.each(&foo/1)
+    |> File.close
+  end
+
+  bench "stream and iterate 1 document", [fixtures: get_fixtures()] do
+    fixtures[:single]
+    |> File.stream!([:read, :binary, :raw], 4096)
+    |> BSONEach.each(&foo/1)
+    |> File.close
+  end
+
+  bench "stream and iterate 30 documents", [fixtures: get_fixtures()] do
+    fixtures[:small]
+    |> File.stream!([:read, :binary, :raw], 4096)
+    |> BSONEach.each(&foo/1)
+    |> File.close
+  end
+
+  bench "stream and iterate 300 documents", [fixtures: get_fixtures()] do
+    fixtures[:medium]
+    |> File.stream!([:read, :binary, :raw], 4096)
+    |> BSONEach.each(&foo/1)
+    |> File.close
+  end
+
+  bench "stream and iterate 3_000 documents", [fixtures: get_fixtures()] do
+    fixtures[:large]
+    |> File.stream!([:read, :binary, :raw], 4096)
+    |> BSONEach.each(&foo/1)
+    |> File.close
+  end
+
+  bench "stream and iterate 30_000 documents", [fixtures: get_fixtures()] do
+    fixtures[:xlarge]
+    |> File.stream!([:read, :binary, :raw], 4096)
     |> BSONEach.each(&foo/1)
     |> File.close
   end
