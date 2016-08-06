@@ -31,7 +31,7 @@ File is read by 4096 byte chunks, BSONEach iterates over all documents till the 
     mix print_each test/fixtures/1000000.bson  583.67s user 66.86s system 75% cpu 14:27.26 total
     ```
 
-  * Pass a file to BSONEach instead of streams, since streamed implementation works so much-much slower:
+  * Pass a file to BSONEach instead of streams, since streamed implementation works so much slower:
 
     ```bash
     $ mix bench
