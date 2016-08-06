@@ -66,8 +66,6 @@ defmodule BSONEach do
     case Enum.at(io, index, :none) do
       data when is_binary(data) ->
         iterate({io, acc <> data, func}, index + 1)
-      :none ->
-        io
       ^index ->
         io
     end
