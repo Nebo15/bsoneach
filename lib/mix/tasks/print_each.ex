@@ -27,5 +27,3 @@ defmodule Mix.Tasks.PrintEach do
     IO.inspect "Done parsing " <> Integer.to_string(CounterAgent.get) <> " documents."
   end
 end
-
-
