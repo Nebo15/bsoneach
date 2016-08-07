@@ -1,23 +1,28 @@
 defmodule Mix.Tasks.PrintRead do
   use Mix.Task
+  alias CounterAgent
 
   @moduledoc """
-  This module defines a task that loads a whole BSON fixture and prints out all documents.
+  This module defines a task that loads a whole BSON fixture and increments counter on each document.
 
   ## Examples
 
       $ mix print_read test.bson
   """
 
-  @shortdoc "Load a whole BSON fixture and print out all documents."
+  @shortdoc "Load a whole BSON fixture and increment counter on each document."
 
   def run(args) do
     [path] = args
+
+    CounterAgent.new
 
     path
     |> File.read
     |> stream_decoder
     |> print_stream
+
+    IO.inspect "Done parsing " <> Integer.to_string(CounterAgent.get) <> " documents."
   end
 
   @doc false
@@ -47,6 +52,6 @@ defmodule Mix.Tasks.PrintRead do
 
   defp print_stream(stream) do
     stream
-    |> Enum.map(&IO.inspect/1)
+    |> Enum.map(&CounterAgent.click(&1))
   end
 end

@@ -1,26 +1,31 @@
 defmodule Mix.Tasks.PrintEach do
   use Mix.Task
   alias BSONEach
+  alias CounterAgent
 
   @moduledoc """
   This module defines a task that uses ```BSONEach.each(&IO.inspect/1)```
-  to print all documents in a sample BSON file.
+  to read bson file and increment counter on each document.
 
   ## Examples
 
       $ mix print_each test.bson
   """
 
-  @shortdoc "Parse a BSON fixture and print out all documents via BSONEach.each function."
+  @shortdoc "Parse a BSON fixture and increment counter on each document via BSONEach.each."
 
   def run(args) do
     [path] = args
 
+    CounterAgent.new
+
     path
-    |> File.open!([:read, :binary, :raw])
-    |> BSONEach.each(&IO.inspect/1)
+    |> File.open!([:read, :binary, :raw, :read_ahead])
+    |> BSONEach.each(&CounterAgent.click(&1))
     |> File.close
 
-    IO.inspect "Done"
+    IO.inspect "Done parsing " <> Integer.to_string(CounterAgent.get) <> " documents."
   end
 end
+
+
