@@ -41,13 +41,19 @@ defmodule BSONEach do
 
   defp iterate(recursion_data, index \\ 0)
 
-  defp iterate({io, <<size::32-little-signed, _::binary>> = acc, func}, index) when byte_size(acc) >= size do
-    case decode(acc) do
-      {doc, next} ->
-        func.(doc)
-        iterate({io, next, func}, index)
-      %Bson.Decoder.Error{what: error} ->
-        get_error(error)
+  defp iterate({io, <<size::32-little-signed, _::binary>> = acc, func}, index) when byte_size(acc) == size do
+    case decode(acc, func) do
+      {:ok, _} -> iterate({io, <<>>, func}, index)
+      error -> error
+    end
+  end
+
+  defp iterate({io, <<size::32-little-signed, _::binary>> = acc, func}, index) when byte_size(acc) > size do
+    <<doc::binary-size(size), next::binary>> = acc
+
+    case decode(doc, func) do
+      {:ok, _} -> iterate({io, next, func}, index)
+      error -> error
     end
   end
 
@@ -71,8 +77,13 @@ defmodule BSONEach do
     end
   end
 
-  defp decode(acc) do
-    Bson.Decoder.document(acc, %Bson.Decoder{})
+  defp decode(acc, func) do
+    case Bson.Decoder.document(acc, %Bson.Decoder{}) do
+      {doc, <<>>} ->
+        {:ok, func.(doc)}
+      %Bson.Decoder.Error{what: error} ->
+        get_error(error)
+    end
   end
 
   defp get_error(_error) do
