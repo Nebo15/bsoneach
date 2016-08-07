@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.PrintEach do
+defmodule Mix.Tasks.CountEach do
   use Mix.Task
   alias BSONEach
   alias CounterAgent

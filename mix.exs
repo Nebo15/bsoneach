@@ -18,12 +18,11 @@ defmodule BSONEach.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :bson]]
+    [applications: [:logger]]
   end
 
   defp deps do
-    [{:bson, "~> 0.4.4"},
-     {:faker, "~> 0.6.0", only: [:dev, :test]},
+    [{:faker, "~> 0.6.0", only: [:dev, :test]},
      {:benchfella, "~> 0.3.0", only: [:dev, :test]},
      {:ex_doc, ">= 0.0.0", only: [:dev, :test]},
      {:excoveralls, "~> 0.5", only: [:dev, :test]},

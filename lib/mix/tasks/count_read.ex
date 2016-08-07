@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.PrintRead do
+defmodule Mix.Tasks.CountRead do
   use Mix.Task
   alias CounterAgent
 
@@ -38,11 +38,11 @@ defmodule Mix.Tasks.PrintRead do
     nil
   end
 
-  defp decode_element(acc) when is_binary(acc) do
-    case Bson.Decoder.document(acc, %Bson.Decoder{}) do
-      {%{} = doc, ""} -> {doc, <<>>}
-      {%{} = doc, buf} -> {doc, buf}
-      {_, ""} -> nil
+  defp decode_element(<<size::32-little-signed, _::binary>> = acc) when is_binary(acc) do
+    <<cur::binary-size(size), rest::binary>> = acc
+
+    case BSON.Decoder.decode(cur) do
+      %{} = doc -> {doc, rest}
     end
   end
 

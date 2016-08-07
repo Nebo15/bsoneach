@@ -7,15 +7,15 @@ defmodule BSONEach do
   ## Examples
 
       "sample.bson"
-      |> File.open!([:read, :binary, :raw])
+      |> BSONEach.File.open
       |> BSONEach.each(&IO.inspect/1)
       |> File.close
   """
 
-  @chunk_size 4096
+  @buf_size 65_535 # Read files by 64 KB by-default
 
   @doc """
-  This module allows to apply ```callback``` function to each document in a BSON file.
+  This method allows to apply ```callback``` function to each document in a BSON file.
 
   Source file should be opened in `:binary`, `:raw` modes. BSONEach can accept file streams.
 
@@ -34,27 +34,45 @@ defmodule BSONEach do
       |> BSONEach.each(&IO.inspect/1)
       |> File.close
   """
-  @spec each(IO.device, Func) :: IO.iodata | IO.nodata
-  def each(io, func) when is_function(func) do
-    iterate({io, <<>>, func})
-  end
-
-  defp iterate(recursion_data, index \\ 0)
-
-  defp iterate({io, <<size::32-little-signed, _::binary>> = acc, func}, index) when byte_size(acc) >= size do
-    case decode(acc) do
-      {doc, next} ->
-        func.(doc)
-        iterate({io, next, func}, index)
-      %Bson.Decoder.Error{what: error} ->
-        get_error(error)
+  @spec each(IO.device | File.Stream.t, Func) :: IO.iodata | IO.nodata
+  def each({:ok, io}, func) do
+    case each(io, func) do
+      {:parse_error, _} = err -> err
+      {:io_error, _} = err -> err
+      io -> {:ok, io}
     end
   end
 
-  defp iterate({{:file_descriptor, :prim_file, _} = io, <<_::binary>> = acc, func}, _) do
-    case IO.binread(io, @chunk_size) do
+  def each({:error, reason}, _) do
+    {:error, reason}
+  end
+
+  def each(io, func) when is_function(func) do
+    iterate(io, <<>>, func)
+  end
+
+  defp iterate(io, buf, func, index \\ 0)
+
+  defp iterate(io, <<size::32-little-signed, _::binary>> = acc, func, index) when byte_size(acc) == size do
+    case decode(acc, func) do
+      {:ok, _} -> iterate(io, <<>>, func, index)
+      error -> error
+    end
+  end
+
+  defp iterate(io, <<size::32-little-signed, _::binary>> = acc, func, index) when byte_size(acc) > size do
+    <<doc::binary-size(size), next::binary>> = acc
+
+    case decode(doc, func) do
+      {:ok, _} -> iterate(io, next, func, index)
+      error -> error
+    end
+  end
+
+  defp iterate({:file_descriptor, :prim_file, _} = io, <<_::binary>> = acc, func, _) do
+    case IO.binread(io, @buf_size) do
       data when is_binary(data) ->
-        iterate({io, acc <> data, func})
+        iterate(io, acc <> data, func)
       :eof ->
         io
       {:error, reason} ->
@@ -62,22 +80,29 @@ defmodule BSONEach do
     end
   end
 
-  defp iterate({%File.Stream{} = io, <<_::binary>> = acc, func}, index) do
+  defp iterate(%File.Stream{} = io, <<_::binary>> = acc, func, index) do
     case Enum.at(io, index, :none) do
       data when is_binary(data) ->
-        iterate({io, acc <> data, func}, index + 1)
+        iterate(io, acc <> data, func, index + 1)
       ^index ->
         io
     end
   end
 
-  defp decode(acc) do
-    Bson.Decoder.document(acc, %Bson.Decoder{})
+  defp decode(acc, func) do
+    try do
+      decode!(acc, func)
+    rescue
+      _ -> {:parse_error, :corrupted_document}
+    end
   end
 
-  defp get_error(_error) do
-    # TODO: Map possible error reasons
-    # [_ | :"document size"] = _error
-    {:parse_error, :corrupted_document}
+  defp decode!(acc, func) do
+    case BSON.Decoder.decode(acc) do
+      %{} = doc ->
+        {:ok, func.(doc)}
+      {:error, _} ->
+        {:parse_error, :corrupted_document}
+    end
   end
 end

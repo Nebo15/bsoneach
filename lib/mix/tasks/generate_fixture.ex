@@ -20,7 +20,7 @@ defmodule Mix.Tasks.GenerateFixture do
 
     size
     |> create_sample_list
-    |> Enum.map(&Bson.encode/1)
+    |> Enum.map(&BSON.Encoder.encode/1)
     |> Enum.each(&IO.binwrite(file, &1))
 
     File.close file
