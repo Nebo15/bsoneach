@@ -10,6 +10,40 @@ File is read by 4096 byte chunks, BSONEach iterates over all documents till the 
 
   * This module archives low memory usage (on my test environment it's constantly consumes 28.1 Mb on a 1.47 GB fixture with 1 000 000 BSON documents).
   * Correlation between file size and parse time is linear. (You can check it by running ```mix bench```).
+
+    ```
+    $ mix bench
+    Settings:
+      duration:      1.0 s
+
+    ## EachBench
+    [18:49:38] 1/10: read and iterate 1 document
+    [18:49:41] 2/10: read and iterate 30 documents
+    [18:49:42] 3/10: read and iterate 300 documents
+    [18:49:44] 4/10: read and iterate 30_000 documents
+    [18:49:45] 5/10: read and iterate 3_000 documents
+    [18:49:47] 6/10: stream and iterate 1 document
+    [18:49:48] 7/10: stream and iterate 30 documents
+    [18:49:50] 8/10: stream and iterate 300 documents
+    [18:49:51] 9/10: stream and iterate 30_000 documents
+    [18:49:56] 10/10: stream and iterate 3_000 documents
+
+    Finished in 20.43 seconds
+
+    ## EachBench
+    read and iterate 1 document               20000   100.07 µs/op
+    stream and iterate 1 document             10000   150.70 µs/op
+    read and iterate 30 documents              1000   1327.53 µs/op
+    stream and iterate 30 documents            1000   1424.17 µs/op
+    read and iterate 300 documents              100   12882.34 µs/op
+    stream and iterate 300 documents            100   13631.52 µs/op
+    read and iterate 3_000 documents             10   126870.90 µs/op
+    stream and iterate 3_000 documents           10   168413.20 µs/op
+    read and iterate 30_000 documents             1   1301289.00 µs/op
+    stream and iterate 30_000 documents           1   5083005.00 µs/op
+    ```
+
+  * It's better to pass a file to BSONEach instead of stream, since streamed implementation works so much slower.
   * BSONEach is CPU-bounded. Consumes 98% of CPU resources on my test environment.
   * (```time``` is not a best way to test this, but..) on large files BSONEach works almost 2 times faster comparing to loading whole file in memory and iterating over it:
 
@@ -22,48 +56,32 @@ File is read by 4096 byte chunks, BSONEach iterates over all documents till the 
     Run different task types:
 
     ```bash
-    $ time mix print_read test/fixtures/1000000.bson
-    mix print_read test/fixtures/1000000.bson  994.60s user 154.40s system 87% cpu 21:51.88 total
+    $ time mix count_read test/fixtures/1000000.bson
+    Compiling 2 files (.ex)
+    "Done parsing 1000000 documents."
+    mix print_read test/fixtures/1000000.bson  59.95s user 5.69s system 99% cpu 1:05.74 total
     ```
 
     ```bash
-    $ time mix print_each test/fixtures/1000000.bson
-    mix print_each test/fixtures/1000000.bson  583.67s user 66.86s system 75% cpu 14:27.26 total
+    $ time mix count_each test/fixtures/1000000.bson
+    Compiling 2 files (.ex)
+    Generated bsoneach app
+    "Done parsing 1000000 documents."
+    mix count_each test/fixtures/1000000.bson  45.37s user 2.74s system 102% cpu 46.876 total
     ```
 
-  * Pass a file to BSONEach instead of streams, since streamed implementation works so much slower:
+  * This implementation works faster than [timkuijsten/node-bson-stream](https://github.com/timkuijsten/node-bson-stream) NPM package (we comparing with Node.js on file with 30k documents):
 
     ```bash
-    $ mix bench
-    Compiling 1 file (.ex)
+    $ time mix count_each test/fixtures/30000.bson
+    "Done parsing 30000 documents."
+    mix count_each test/fixtures/30000.bson  1.75s user 0.35s system 114% cpu 1.839 total
+    ```
 
-    Settings:
-      duration:      1.0 s
-
-    ## EachBench
-    [15:02:11] 1/10: read and iterate 1 document
-    [15:02:12] 2/10: read and iterate 30 documents
-    [15:02:15] 3/10: read and iterate 300 documents
-    [15:02:18] 4/10: read and iterate 30_000 documents
-    [15:02:21] 5/10: read and iterate 3_000 documents
-    [15:02:23] 6/10: stream and iterate 1 document
-    [15:02:26] 7/10: stream and iterate 30 documents
-    [15:02:28] 8/10: stream and iterate 300 documents
-    [15:02:30] 9/10: stream and iterate 30_000 documents
-    [15:04:37] 10/10: stream and iterate 3_000 documents
-    Finished in 151.93 seconds
-
-    ## EachBench
-    read and iterate 1 document               10000   140.63 µs/op
-    stream and iterate 1 document             10000   190.69 µs/op
-    read and iterate 30 documents              1000   2601.48 µs/op
-    stream and iterate 30 documents             500   3198.02 µs/op
-    read and iterate 300 documents              100   25354.27 µs/op
-    stream and iterate 300 documents             50   41764.02 µs/op
-    read and iterate 3_000 documents             10   252262.90 µs/op
-    read and iterate 30_000 documents             1   2514610.00 µs/op
-    stream and iterate 3_000 documents            1   6238468.00 µs/op
-    stream and iterate 30_000 documents           1   126495171.00 µs/op
+    ```bash
+    $ time node index.js
+    Read 30000 documents.
+    node index.js  2.09s user 0.05s system 100% cpu 2.139 total
     ```
 
 ## Installation
@@ -92,7 +110,7 @@ It's available on [hex.pm](https://hex.pm/packages/bsoneach) and can be installe
 
     ```elixir
     "test/fixtures/300.bson" # File path
-    |> File.open!([:read, :binary, :raw]) # Open file in :binary, :raw mode
+    |> BSONEach.File.open # Open file in :binary, :raw, :read_ahead modes
     |> BSONEach.each(&process_bson_document/1) # Send IO.device to BSONEach.each function and pass a callback
     |> File.close # Don't forget to close referenced file
     ```
@@ -107,3 +125,7 @@ It's available on [hex.pm](https://hex.pm/packages/bsoneach) and can be installe
     ```
 
 When you process large files its a good thing to process documents asynchronously, you can find more info [here](http://elixir-lang.org/docs/stable/elixir/Task.html).
+
+## Thanks
+
+I want to thank to @ericmj for his MongoDB driver. All code that encodes and decodes to with BSON was taken from his repo.

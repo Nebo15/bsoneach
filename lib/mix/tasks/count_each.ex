@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.PrintEach do
+defmodule Mix.Tasks.CountEach do
   use Mix.Task
   alias BSONEach
   alias CounterAgent
@@ -27,5 +27,3 @@ defmodule Mix.Tasks.PrintEach do
     IO.inspect "Done parsing " <> Integer.to_string(CounterAgent.get) <> " documents."
   end
 end
-
-
