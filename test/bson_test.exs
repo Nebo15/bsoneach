@@ -36,10 +36,10 @@ defmodule BSONTest do
   @map8 %{"d" => []}
   @bin8 <<13, 0, 0, 0, 4, 100, 0, 5, 0, 0, 0, 0, 0>>
 
-  @map9 %{"e" => %BSON.Binary{binary: <<1,2,3>>, subtype: :generic}}
+  @map9 %{"e" => %BSON.Binary{binary: <<1, 2, 3>>, subtype: :generic}}
   @bin9 <<16, 0, 0, 0, 5, 101, 0, 3, 0, 0, 0, 0, 1, 2, 3, 0>>
 
-  @map10 %{"f" => %BSON.ObjectId{value: <<0,1,2,3,4,5,6,7,8,9,10,11>>}}
+  @map10 %{"f" => %BSON.ObjectId{value: <<0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11>>}}
   @bin10 <<20, 0, 0, 0, 7, 102, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0>>
 
   @map11 %{"g" => true}
@@ -55,7 +55,8 @@ defmodule BSONTest do
   @bin14 <<18, 0, 0, 0, 13, 106, 0, 6, 0, 0, 0, 49, 32, 43, 32, 50, 0, 0>>
 
   @map15 %{"k" => %BSON.JavaScript{code: "a + b", scope: %{"a" => 2, "b" => 2}}}
-  @bin15 <<41, 0, 0, 0, 15, 107, 0, 33, 0, 0, 0, 6, 0, 0, 0, 97, 32, 43, 32, 98, 0, 19, 0, 0, 0, 16, 97, 0, 2, 0, 0, 0, 16, 98, 0, 2, 0, 0, 0, 0, 0>>
+  @bin15 <<41, 0, 0, 0, 15, 107, 0, 33, 0, 0, 0, 6, 0, 0, 0, 97, 32,
+           43, 32, 98, 0, 19, 0, 0, 0, 16, 97, 0, 2, 0, 0, 0, 16, 98, 0, 2, 0, 0, 0, 0, 0>>
 
   @map16 %{"l" => 12345}
   @bin16 <<12, 0, 0, 0, 16, 108, 0, 57, 48, 0, 0, 0>>
@@ -141,43 +142,43 @@ defmodule BSONTest do
     assert decode(encoded) == @map1
   end
 
-  @mapPosInf %{"a" => :inf}
-  @binPosInf <<16, 0, 0, 0, 1, 97, 0, 0, 0, 0, 0, 0, 0, 240::little-integer-size(8), 127::little-integer-size(8), 0>>
+  @map_pos_inf %{"a" => :inf}
+  @bin_pos_inf <<16, 0, 0, 0, 1, 97, 0, 0, 0, 0, 0, 0, 0, 240::little-integer-size(8), 127::little-integer-size(8), 0>>
 
-  @mapNegInf %{"a" => :"-inf"}
-  @binNegInf <<16, 0, 0, 0, 1, 97, 0, 0, 0, 0, 0, 0, 0, 240::little-integer-size(8), 255::little-integer-size(8), 0>>
+  @map_neg_inf %{"a" => :"-inf"}
+  @bin_neg_inf <<16, 0, 0, 0, 1, 97, 0, 0, 0, 0, 0, 0, 0, 240::little-integer-size(8), 255::little-integer-size(8), 0>>
 
-  @mapNaN %{"a" => :NaN}
-  @binNaN <<16, 0, 0, 0, 1, 97, 0, 0, 0, 0, 0, 0, 0, 248::little-integer-size(8), 127::little-integer-size(8), 0>>
+  @map_nan %{"a" => :NaN}
+  @bin_nan <<16, 0, 0, 0, 1, 97, 0, 0, 0, 0, 0, 0, 0, 248::little-integer-size(8), 127::little-integer-size(8), 0>>
 
   @tag bson_wip: true
   test "decode float NaN" do
-    assert decode(@binNaN) == @mapNaN
+    assert decode(@bin_nan) == @map_nan
   end
 
   @tag bson_wip: true
   test "encode float NaN" do
-    assert encode(@mapNaN) == @binNaN
+    assert encode(@map_nan) == @bin_nan
   end
 
   @tag bson_wip: true
   test "decode float positive Infinity" do
-    assert decode(@binPosInf) == @mapPosInf
+    assert decode(@bin_pos_inf) == @map_pos_inf
   end
 
   @tag bson_wip: true
   test "encode float positive Infinity" do
-    assert encode(@mapPosInf) == @binPosInf
+    assert encode(@map_pos_inf) == @bin_pos_inf
   end
 
   @tag bson_wip: true
   test "decode float negative Infinity" do
-    assert decode(@binNegInf) == @mapNegInf
+    assert decode(@bin_neg_inf) == @map_neg_inf
   end
 
   @tag bson_wip: true
   test "encode float negative Infinity" do
-    assert encode(@mapNegInf) == @binNegInf
+    assert encode(@map_neg_inf) == @bin_neg_inf
   end
 
   defp encode(value) do

@@ -39,18 +39,18 @@ defmodule BSON.TypesTest do
 
   test "inspect BSON.Regex" do
     value = %BSON.Regex{pattern: "abc"}
-    assert inspect(value) == "#BSON.Regex<\"abc\">"
+    assert inspect(value) == ~S(#BSON.Regex<"abc">)
 
     value = %BSON.Regex{pattern: "abc", options: "i"}
-    assert inspect(value) == "#BSON.Regex<\"abc\", \"i\">"
+    assert inspect(value) == ~S(#BSON.Regex<"abc", "i">)
   end
 
   test "inspect BSON.JavaScript" do
     value = %BSON.JavaScript{code: "this === null"}
-    assert inspect(value) == "#BSON.JavaScript<\"this === null\">"
+    assert inspect(value) == ~S(#BSON.JavaScript<"this === null">)
 
     value = %BSON.JavaScript{code: "this === value", scope: %{value: nil}}
-    assert inspect(value) == "#BSON.JavaScript<\"this === value\", %{value: nil}>"
+    assert inspect(value) == ~S(#BSON.JavaScript<"this === value", %{value: nil}>)
   end
 
   test "inspect BSON.Timestamp" do
