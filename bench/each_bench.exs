@@ -48,35 +48,35 @@ defmodule EachBench do
 
   bench "stream and iterate 1 document", [fixtures: get_fixtures()] do
     fixtures[:single]
-    |> File.stream!([:read, :binary, :raw], 4096)
+    |> File.stream!([:read, :binary, :raw, :read_ahead], 4096)
     |> BSONEach.each(&foo/1)
     |> File.close
   end
 
   bench "stream and iterate 30 documents", [fixtures: get_fixtures()] do
     fixtures[:small]
-    |> File.stream!([:read, :binary, :raw], 4096)
+    |> File.stream!([:read, :binary, :raw, :read_ahead], 4096)
     |> BSONEach.each(&foo/1)
     |> File.close
   end
 
   bench "stream and iterate 300 documents", [fixtures: get_fixtures()] do
     fixtures[:medium]
-    |> File.stream!([:read, :binary, :raw], 4096)
+    |> File.stream!([:read, :binary, :raw, :read_ahead], 4096)
     |> BSONEach.each(&foo/1)
     |> File.close
   end
 
   bench "stream and iterate 3_000 documents", [fixtures: get_fixtures()] do
     fixtures[:large]
-    |> File.stream!([:read, :binary, :raw], 4096)
+    |> File.stream!([:read, :binary, :raw, :read_ahead], 4096)
     |> BSONEach.each(&foo/1)
     |> File.close
   end
 
   bench "stream and iterate 30_000 documents", [fixtures: get_fixtures()] do
     fixtures[:xlarge]
-    |> File.stream!([:read, :binary, :raw], 4096)
+    |> File.stream!([:read, :binary, :raw, :read_ahead], 4096)
     |> BSONEach.each(&foo/1)
     |> File.close
   end
