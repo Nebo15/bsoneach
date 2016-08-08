@@ -27,7 +27,7 @@ defmodule BSONEach.Mixfile do
      {:ex_doc, ">= 0.0.0", only: [:dev, :test]},
      {:excoveralls, "~> 0.5", only: [:dev, :test]},
      {:dogma, "~> 0.1", only: [:dev, :test]},
-     {:credo, "~> 0.4", only: [:dev, :test]}]
+     {:credo, "~> 0.4.8", only: [:dev, :test]}]
   end
 
   defp package do
