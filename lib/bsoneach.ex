@@ -101,18 +101,18 @@ defmodule BSONEach do
   end
 
   defp decode(acc, func) do
-    try do
-      decode!(acc, func)
+    res = try do
+      BSON.Decoder.decode(acc)
     rescue
       _ -> {:parse_error, :corrupted_document}
     end
-  end
 
-  defp decode!(acc, func) do
-    case BSON.Decoder.decode(acc) do
+    case res do
       %{} = doc ->
         apply_callback(doc, func)
-      {:error, _} ->
+      {:parse_error, reason} ->
+        {:parse_error, reason}
+      {:error, _} ->m
         {:parse_error, :corrupted_document}
     end
   end

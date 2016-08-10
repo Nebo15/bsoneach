@@ -92,7 +92,7 @@ It's available on [hex.pm](https://hex.pm/packages/bsoneach) and can be installe
 
     ```elixir
     def deps do
-      [{:bsoneach, "~> 0.3.1"}]
+      [{:bsoneach, "~> 0.3.2"}]
     end
     ```
 
