@@ -112,7 +112,7 @@ defmodule BSONEach do
         apply_callback(doc, func)
       {:parse_error, reason} ->
         {:parse_error, reason}
-      {:error, _} ->m
+      {:error, _} ->
         {:parse_error, :corrupted_document}
     end
   end
