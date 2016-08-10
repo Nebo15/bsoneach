@@ -161,6 +161,12 @@ defmodule BSONEachTest do
     |> BSONEach.each(&IO.inspect/1)
   end
 
+  test "cancel processing from a callback" do
+    assert {:error, :callback_canceled} = @fixtures[:multiple]
+    |> BSONEach.File.stream
+    |> BSONEach.each(fn _ -> :stop end)
+  end
+
   def assert_document(%{} = parse_result, %{} = document) do
     assert parse_result == document
   end

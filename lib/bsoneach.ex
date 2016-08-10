@@ -10,6 +10,16 @@ defmodule BSONEach do
       |> BSONEach.File.open
       |> BSONEach.each(&IO.inspect/1)
       |> File.close
+
+  Callback function can return `:stop` atom to tell BSONEach to stop reading file and exit with error.
+  Any other result will be counted as :ok.
+
+  ### Examples
+
+      def callback do
+        :stop # Tell BSONEach to stop parsing file
+      end
+
   """
 
   @buf_size 65_535 # Read files by 64 KB by-default
@@ -26,6 +36,7 @@ defmodule BSONEach do
   Possible reasons: `:corrupted_document`.
   * `{:io_error, reason}` - in case [IO.binstream](http://elixir-lang.org/docs/stable/elixir/IO.html#binread/2)
   returned an error.
+  * `{:error, :callback_canceled}` - in cases when callback function returned `:stop` atom to canceled file processing.
 
   ## Examples
 
@@ -100,9 +111,16 @@ defmodule BSONEach do
   defp decode!(acc, func) do
     case BSON.Decoder.decode(acc) do
       %{} = doc ->
-        {:ok, func.(doc)}
+        apply_callback(doc, func)
       {:error, _} ->
         {:parse_error, :corrupted_document}
+    end
+  end
+
+  defp apply_callback(doc, func) do
+    case func.(doc) do
+      :stop -> {:error, :callback_canceled}
+      _ -> {:ok, :applied}
     end
   end
 end
