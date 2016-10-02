@@ -8,13 +8,11 @@ defmodule BSONEach.File do
 
       "sample.bson"
       |> BSONEach.File.open
-
-      "sample.bson"
-      |> BSONEach.File.stream
+      #|> process_file_here
+      |> BSONEach.File.close
   """
 
   @read_modes [:read, :binary, :raw, :read_ahead] # This modes showed best performance on benchmarks
-  @buf_size 65_535 # Read files by 64 KB by-default
 
   @doc """
   Opens the given `path`.
@@ -26,15 +24,11 @@ defmodule BSONEach.File do
   end
 
   @doc """
-  Returns a `File.Stream` for the given `path`.
+  Same as `File.close/0`.
   """
-  @spec open(File.Path.t) :: File.Stream.t | {:error, String.t}
-  def stream(path) do
-    try do
-      path
-      |> File.stream!(@read_modes, @buf_size)
-    catch
-      reason -> {:error, reason}
-    end
+  @spec close(File.io_device) :: :ok | {:error, File.posix | :badarg | :terminated}
+  def close(io) do
+    io
+    |> File.close
   end
 end

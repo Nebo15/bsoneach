@@ -1,5 +1,7 @@
 {
   "skip_files": [
-    "lib/mix/*"
+    "lib/mix/*",
+    "lib/bson/binary_utils.ex",
+    "lib/bson/utils.ex"
   ]
 }
