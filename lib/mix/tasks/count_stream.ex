@@ -1,7 +1,7 @@
-defmodule Mix.Tasks.CountEach do
+defmodule Mix.Tasks.CountStream do
   use Mix.Task
   alias BSONEach
-  alias CounterAgent
+  alias BSONEach.Mix.Utils.CounterAgent
 
   @moduledoc """
   This module defines a task that uses ```BSONEach.each(&IO.inspect/1)```
@@ -9,7 +9,7 @@ defmodule Mix.Tasks.CountEach do
 
   ## Examples
 
-      $ mix print_each test.bson
+      $ mix count_stream test.bson
   """
 
   @shortdoc "Parse a BSON fixture and increment counter on each document via BSONEach.each."
@@ -24,6 +24,6 @@ defmodule Mix.Tasks.CountEach do
     |> BSONEach.each(&CounterAgent.click(&1))
     |> File.close
 
-    IO.inspect "Done parsing " <> Integer.to_string(CounterAgent.get) <> " documents."
+    IO.puts "Done parsing " <> Integer.to_string(CounterAgent.get) <> " documents."
   end
 end

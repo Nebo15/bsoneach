@@ -63,19 +63,19 @@ File is read by 4096 byte chunks, BSONEach iterates over all documents till the 
     ```
 
     ```bash
-    $ time mix count_each test/fixtures/1000000.bson
+    $ time mix count_stream test/fixtures/1000000.bson
     Compiling 2 files (.ex)
     Generated bsoneach app
     "Done parsing 1000000 documents."
-    mix count_each test/fixtures/1000000.bson  45.37s user 2.74s system 102% cpu 46.876 total
+    mix count_stream test/fixtures/1000000.bson  45.37s user 2.74s system 102% cpu 46.876 total
     ```
 
   * This implementation works faster than [timkuijsten/node-bson-stream](https://github.com/timkuijsten/node-bson-stream) NPM package (we comparing with Node.js on file with 30k documents):
 
     ```bash
-    $ time mix count_each test/fixtures/30000.bson
+    $ time mix count_stream test/fixtures/30000.bson
     "Done parsing 30000 documents."
-    mix count_each test/fixtures/30000.bson  1.75s user 0.35s system 114% cpu 1.839 total
+    mix count_stream test/fixtures/30000.bson  1.75s user 0.35s system 114% cpu 1.839 total
     ```
 
     ```bash

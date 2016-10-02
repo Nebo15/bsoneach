@@ -35,6 +35,6 @@ defmodule BSONEach.Mixfile do
      maintainers: ["Andrew Dryga"],
      licenses: ["MIT"],
      links: %{github: "https://github.com/Nebo15/bsoneach"},
-     files: ~w(lib LICENSE.md mix.exs README.md)]
+     files: ~w(lib/bson lib/bsoneach lib/bsoneach.ex lib/mix/utils.ex LICENSE.md mix.exs mix.lock README.md)]
   end
 end
