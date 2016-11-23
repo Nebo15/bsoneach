@@ -28,7 +28,7 @@ defmodule BSONEach.File do
   @doc """
   Returns a `File.Stream` for the given `path`.
   """
-  @spec open(File.Path.t) :: File.Stream.t | {:error, String.t}
+  @spec stream(File.Path.t) :: File.Stream.t | {:error, String.t}
   def stream(path) do
     try do
       path
