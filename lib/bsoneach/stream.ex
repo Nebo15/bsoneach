@@ -1,10 +1,9 @@
 defmodule BSONEach.Stream do
-  import BSONEach.Reader
-  import BSONEach.File
-
   @moduledoc """
   This module creates stream of Elixir structures from a BSON file with one or many documents.
   """
+  import BSONEach.Reader
+  import BSONEach.File
 
   @doc """
   Create a documents stream from batch to BSON file.
