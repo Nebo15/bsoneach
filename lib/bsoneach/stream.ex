@@ -17,25 +17,25 @@ defmodule BSONEach.Stream do
     * `:report` - same as `:skip` but errors with their reasons will be returned as Stream elements.
   """
   @spec resource(Path.t, atom) :: Enum.t
-  def resource(path, on_corrupted \\ :stop) do
+  def resource(path, on_corrupted \\ :stop, additional_data \\ nil) do
     case File.exists?(path) do
-      true -> stream(path, on_corrupted)
+      true -> stream(path, on_corrupted, additional_data)
       false -> {:error, :enoent}
     end
   end
 
-  defp stream(path, on_corrupted) do
+  defp stream(path, on_corrupted, additional_data) do
     Stream.resource(
       fn -> path |> open() end,
-      &stream_reader(&1, on_corrupted),
+      &stream_reader(&1, on_corrupted, additional_data),
       &close/1
     )
   end
 
-  defp stream_reader(io, :stop) do
+  defp stream_reader(io, :stop, additional_data) do
     case read(io) do
       {:ok, doc} ->
-        {[doc], io}
+        make_resp(io, doc, additional_data)
       :eof ->
         {:halt, :eof}
       err ->
@@ -43,25 +43,28 @@ defmodule BSONEach.Stream do
     end
   end
 
-  defp stream_reader(io, :skip) do
+  defp stream_reader(io, :skip, additional_data) do
     case read(io) do
       {:ok, doc} ->
-        {[doc], io}
+        make_resp(io, doc, additional_data)
       :eof ->
         {:halt, :eof}
       _err ->
-        stream_reader(io, :skip)
+        stream_reader(io, :skip, additional_data)
     end
   end
 
-  defp stream_reader(io, :report) do
+  defp stream_reader(io, :report, additional_data) do
     case read(io) do
       {:ok, doc} ->
-        {[doc], io}
+        make_resp(io, doc, additional_data)
       :eof ->
         {:halt, :eof}
       err ->
         {[err], io}
     end
   end
+
+  defp make_resp(io, doc, nil), do: {[doc], io}
+  defp make_resp(io, doc, additional_data), do: {[{doc, additional_data}], io}
 end
