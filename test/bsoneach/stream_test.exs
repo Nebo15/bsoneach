@@ -30,8 +30,9 @@ defmodule BSONEach.StreamTest do
 
   test "stream on single document", fixtures do
     documents = fixtures[:single]
-    |> BSONEach.Stream.resource
-    |> Enum.map(fn document ->
+    |> BSONEach.Stream.resource(:stop, "some additional data")
+    |> Enum.map(fn {document, additional_data} ->
+      assert additional_data == "some additional data"
       assert_document document
     end)
 
