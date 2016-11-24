@@ -29,11 +29,11 @@ defmodule BSON.Decoder do
 
   defp type(@type_binary, <<size::int32, subtype, binary::binary(size), rest::binary>>) do
     subtype = subtype(subtype)
-    {%BSON.Binary{binary: binary, subtype: subtype}, rest}
+    {%BSON.Types.Binary{binary: binary, subtype: subtype}, rest}
   end
 
   defp type(@type_objectid, <<binary::binary(12), rest::binary>>) do
-    {%BSON.ObjectId{value: binary}, rest}
+    {%BSON.Types.ObjectId{value: binary}, rest}
   end
 
   defp type(@type_bool, <<0x00, rest::binary>>) do
@@ -45,7 +45,7 @@ defmodule BSON.Decoder do
   end
 
   defp type(@type_datetime, <<utc::int64, rest::binary>>) do
-    {%BSON.DateTime{utc: utc}, rest}
+    {%BSON.Types.DateTime{utc: utc}, rest}
   end
 
   defp type(@type_null, rest) do
@@ -55,12 +55,12 @@ defmodule BSON.Decoder do
   defp type(@type_regex, binary) do
     {pattern, rest} = cstring(binary)
     {options, rest} = cstring(rest)
-    {%BSON.Regex{pattern: pattern, options: options}, rest}
+    {%BSON.Types.Regex{pattern: pattern, options: options}, rest}
   end
 
   defp type(@type_js, binary) do
     {code, rest} = type(@type_string, binary)
-    {%BSON.JavaScript{code: code}, rest}
+    {%BSON.Types.JavaScript{code: code}, rest}
   end
 
   defp type(@type_symbol, binary) do
@@ -72,7 +72,7 @@ defmodule BSON.Decoder do
     <<binary::binary(size), rest::binary>> = binary
     {code, binary} = type(@type_string, binary)
     {scope, ""} = document(binary)
-    {%BSON.JavaScript{code: code, scope: scope}, rest}
+    {%BSON.Types.JavaScript{code: code, scope: scope}, rest}
   end
 
   defp type(@type_int32, <<int::int32, rest::binary>>) do
@@ -80,7 +80,7 @@ defmodule BSON.Decoder do
   end
 
   defp type(@type_timestamp, <<value::int64, rest::binary>>) do
-    {%BSON.Timestamp{value: value}, rest}
+    {%BSON.Types.Timestamp{value: value}, rest}
   end
 
   defp type(@type_int64, <<int::int64, rest::binary>>) do

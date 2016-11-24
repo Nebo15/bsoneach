@@ -1,7 +1,7 @@
 {
   "skip_files": [
     "lib/mix/*",
-    "lib/bson/",
-    "lib/counter_agent/*"
+    "lib/bson/binary_utils.ex",
+    "lib/bson/utils.ex"
   ]
 }

@@ -1,7 +1,7 @@
 defmodule BSONEach.Mixfile do
   use Mix.Project
 
-  @version "0.3.2"
+  @version "0.4.0"
 
   def project do
     [app: :bsoneach,
@@ -35,6 +35,6 @@ defmodule BSONEach.Mixfile do
      maintainers: ["Andrew Dryga"],
      licenses: ["MIT"],
      links: %{github: "https://github.com/Nebo15/bsoneach"},
-     files: ~w(lib LICENSE.md mix.exs README.md)]
+     files: ~w(lib/bson lib/bsoneach lib/bsoneach.ex lib/mix/utils.ex LICENSE.md mix.exs mix.lock README.md)]
   end
 end

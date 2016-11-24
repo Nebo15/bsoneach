@@ -17,30 +17,30 @@ defmodule BSON.Encoder do
   def encode(:BSON_max),
     do: ""
 
-  def encode(%BSON.Binary{binary: binary, subtype: subtype}) do
+  def encode(%BSON.Types.Binary{binary: binary, subtype: subtype}) do
     subtype = subtype(subtype)
     [<<IO.iodata_length(binary)::int32>>, subtype | binary]
   end
 
-  def encode(%BSON.ObjectId{value: <<_::binary(12)>> = value}),
+  def encode(%BSON.Types.ObjectId{value: <<_::binary(12)>> = value}),
     do: value
 
-  def encode(%BSON.DateTime{utc: utc}) when is_int64(utc),
+  def encode(%BSON.Types.DateTime{utc: utc}) when is_int64(utc),
     do: <<utc::int64>>
 
-  def encode(%BSON.Regex{pattern: pattern, options: options}),
+  def encode(%BSON.Types.Regex{pattern: pattern, options: options}),
     do: [cstring(pattern) | cstring(options)]
 
-  def encode(%BSON.JavaScript{code: code, scope: nil}),
+  def encode(%BSON.Types.JavaScript{code: code, scope: nil}),
     do: encode(code)
 
-  def encode(%BSON.JavaScript{code: code, scope: scope}) do
+  def encode(%BSON.Types.JavaScript{code: code, scope: scope}) do
     iodata = [encode(code), document(scope)]
     size = IO.iodata_length(iodata) + 4
     [<<size::int32>> | iodata]
   end
 
-  def encode(%BSON.Timestamp{value: value}),
+  def encode(%BSON.Types.Timestamp{value: value}),
     do: <<value::int64>>
 
   def encode([]) do
@@ -121,13 +121,13 @@ defmodule BSON.Encoder do
     {:error, :invalid_document}
   end
 
-  defp type(%BSON.Binary{}),                do: @type_binary
-  defp type(%BSON.ObjectId{}),              do: @type_objectid
-  defp type(%BSON.DateTime{}),              do: @type_datetime
-  defp type(%BSON.Regex{}),                 do: @type_regex
-  defp type(%BSON.JavaScript{scope: nil}),  do: @type_js
-  defp type(%BSON.JavaScript{}),            do: @type_js_scope
-  defp type(%BSON.Timestamp{}),             do: @type_timestamp
+  defp type(%BSON.Types.Binary{}),                do: @type_binary
+  defp type(%BSON.Types.ObjectId{}),              do: @type_objectid
+  defp type(%BSON.Types.DateTime{}),              do: @type_datetime
+  defp type(%BSON.Types.Regex{}),                 do: @type_regex
+  defp type(%BSON.Types.JavaScript{scope: nil}),  do: @type_js
+  defp type(%BSON.Types.JavaScript{}),            do: @type_js_scope
+  defp type(%BSON.Types.Timestamp{}),             do: @type_timestamp
   defp type(nil),                           do: @type_null
   defp type(:BSON_min),                     do: @type_min
   defp type(:BSON_max),                     do: @type_max

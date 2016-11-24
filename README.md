@@ -1,10 +1,12 @@
 # BSONEach
 
-[![Deps Status](https://beta.hexfaktor.org/badge/all/github/Nebo15/bsoneach.svg)](https://beta.hexfaktor.org/github/Nebo15/bsoneach) [![Hex.pm Downloads](https://img.shields.io/hexpm/dw/bsoneach.svg?maxAge=3600)](https://hex.pm/packages/bsoneach) [![Latest Version](https://img.shields.io/hexpm/v/bsoneach.svg?maxAge=3600)](https://hex.pm/packages/bsoneach) [![License](https://img.shields.io/hexpm/l/bsoneach.svg?maxAge=3600)](https://hex.pm/packages/bsoneach) [![Build Status](https://travis-ci.org/Nebo15/bsoneach.svg?branch=master)](https://travis-ci.org/Nebo15/bsoneach) [![Coverage Status](https://coveralls.io/repos/github/Nebo15/bsoneach/badge.svg?branch=master)](https://coveralls.io/github/Nebo15/bsoneach?branch=master)
+[![Deps Status](https://beta.hexfaktor.org/badge/all/github/Nebo15/bsoneach.svg)](https://beta.hexfaktor.org/github/Nebo15/bsoneach) [![Hex.pm Downloads](https://img.shields.io/hexpm/dw/bsoneach.svg?maxAge=3600)](https://hex.pm/packages/bsoneach) [![Latest Version](https://img.shields.io/hexpm/v/bsoneach.svg?maxAge=3600)](https://hex.pm/packages/bsoneach) [![License](https://img.shields.io/hexpm/l/bsoneach.svg?maxAge=3600)](https://hex.pm/packages/bsoneach) [![Build Status](https://travis-ci.org/Nebo15/bsoneach.svg?branch=master)](https://travis-ci.org/Nebo15/bsoneach) [![Coverage Status](https://coveralls.io/repos/github/Nebo15/bsoneach/badge.svg?branch=master)](https://coveralls.io/github/Nebo15/bsoneach?branch=master) [![Ebert](https://ebertapp.io/github/Nebo15/bsoneach.svg)](https://ebertapp.io/github/Nebo15/bsoneach)
 
 This module aims on reading large BSON files with low memory consumption. It provides single ```BSONEach.each(func)``` function that will read BSON file and apply callback function ```func``` to each parsed document.
 
 File is read by 4096 byte chunks, BSONEach iterates over all documents till the end of file is reached.
+
+Also you can use ```BSONEach.stream(path)``` if you want to read file as IO stream, which is useful when you use GenStage behavior.
 
 ## Performance
 
@@ -16,31 +18,31 @@ File is read by 4096 byte chunks, BSONEach iterates over all documents till the 
     Settings:
       duration:      1.0 s
 
-    ## EachBench
-    [18:49:38] 1/10: read and iterate 1 document
-    [18:49:41] 2/10: read and iterate 30 documents
-    [18:49:42] 3/10: read and iterate 300 documents
-    [18:49:44] 4/10: read and iterate 30_000 documents
-    [18:49:45] 5/10: read and iterate 3_000 documents
-    [18:49:47] 6/10: stream and iterate 1 document
-    [18:49:48] 7/10: stream and iterate 30 documents
-    [18:49:50] 8/10: stream and iterate 300 documents
-    [18:49:51] 9/10: stream and iterate 30_000 documents
-    [18:49:56] 10/10: stream and iterate 3_000 documents
+    ## IterativeBench
+    [17:36:14] 1/8: read and iterate 1 document
+    [17:36:16] 2/8: read and iterate 30 documents
+    [17:36:18] 3/8: read and iterate 300 documents
+    [17:36:20] 4/8: read and iterate 30_000 documents
+    [17:36:21] 5/8: read and iterate 3_000 documents
+    ## StreamBench
+    [17:36:22] 6/8: stream and iterate 300 documents
+    [17:36:24] 7/8: stream and iterate 30_000 documents
+    [17:36:25] 8/8: stream and iterate 3_000 documents
 
-    Finished in 20.43 seconds
+    Finished in 13.19 seconds
 
-    ## EachBench
-    read and iterate 1 document               20000   100.07 µs/op
-    stream and iterate 1 document             10000   150.70 µs/op
-    read and iterate 30 documents              1000   1327.53 µs/op
-    stream and iterate 30 documents            1000   1424.17 µs/op
-    read and iterate 300 documents              100   12882.34 µs/op
-    stream and iterate 300 documents            100   13631.52 µs/op
-    read and iterate 3_000 documents             10   126870.90 µs/op
-    stream and iterate 3_000 documents           10   168413.20 µs/op
-    read and iterate 30_000 documents             1   1301289.00 µs/op
-    stream and iterate 30_000 documents           1   5083005.00 µs/op
+    ## IterativeBench
+    benchmark name                       iterations   average time
+    read and iterate 1 document              100000   15.54 µs/op
+    read and iterate 30 documents             50000   22.63 µs/op
+    read and iterate 300 documents              100   13672.39 µs/op
+    read and iterate 3_000 documents             10   127238.70 µs/op
+    read and iterate 30_000 documents             1   1303975.00 µs/op
+    ## StreamBench
+    benchmark name                       iterations   average time
+    stream and iterate 300 documents            100   14111.38 µs/op
+    stream and iterate 3_000 documents           10   142093.60 µs/op
+    stream and iterate 30_000 documents           1   1429789.00 µs/op
     ```
 
   * It's better to pass a file to BSONEach instead of stream, since streamed implementation works so much slower.
@@ -63,19 +65,19 @@ File is read by 4096 byte chunks, BSONEach iterates over all documents till the 
     ```
 
     ```bash
-    $ time mix count_each test/fixtures/1000000.bson
+    $ time mix count_stream test/fixtures/1000000.bson
     Compiling 2 files (.ex)
     Generated bsoneach app
     "Done parsing 1000000 documents."
-    mix count_each test/fixtures/1000000.bson  45.37s user 2.74s system 102% cpu 46.876 total
+    mix count_stream test/fixtures/1000000.bson  45.37s user 2.74s system 102% cpu 46.876 total
     ```
 
   * This implementation works faster than [timkuijsten/node-bson-stream](https://github.com/timkuijsten/node-bson-stream) NPM package (we comparing with Node.js on file with 30k documents):
 
     ```bash
-    $ time mix count_each test/fixtures/30000.bson
+    $ time mix count_stream test/fixtures/30000.bson
     "Done parsing 30000 documents."
-    mix count_each test/fixtures/30000.bson  1.75s user 0.35s system 114% cpu 1.839 total
+    mix count_stream test/fixtures/30000.bson  1.75s user 0.35s system 114% cpu 1.839 total
     ```
 
     ```bash
@@ -92,7 +94,7 @@ It's available on [hex.pm](https://hex.pm/packages/bsoneach) and can be installe
 
     ```elixir
     def deps do
-      [{:bsoneach, "~> 0.3.2"}]
+      [{:bsoneach, "~> 0.4.0"}]
     end
     ```
 

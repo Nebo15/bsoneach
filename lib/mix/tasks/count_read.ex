@@ -1,13 +1,13 @@
 defmodule Mix.Tasks.CountRead do
   use Mix.Task
-  alias CounterAgent
+  alias BSONEach.Mix.Utils.CounterAgent
 
   @moduledoc """
   This module defines a task that loads a whole BSON fixture and increments counter on each document.
 
   ## Examples
 
-      $ mix print_read test.bson
+      $ mix count_read test.bson
   """
 
   @shortdoc "Load a whole BSON fixture and increment counter on each document."
@@ -20,17 +20,16 @@ defmodule Mix.Tasks.CountRead do
     path
     |> File.read
     |> stream_decoder
-    |> print_stream
+    |> process_stream
 
     IO.inspect "Done parsing " <> Integer.to_string(CounterAgent.get) <> " documents."
   end
 
-  @doc false
-  def stream_decoder({:ok, bin}) do
+  defp stream_decoder({:ok, bin}) do
     Stream.unfold(bin, &decode_element/1)
   end
 
-  def stream_decoder({:error, reason}) do
+  defp stream_decoder({:error, reason}) do
     {:error, reason}
   end
 
@@ -46,11 +45,11 @@ defmodule Mix.Tasks.CountRead do
     end
   end
 
-  defp print_stream({:error, _} = error) do
-    IO.inspect error
+  defp process_stream({:error, _} = error) do
+    throw error
   end
 
-  defp print_stream(stream) do
+  defp process_stream(stream) do
     stream
     |> Enum.map(&CounterAgent.click(&1))
   end

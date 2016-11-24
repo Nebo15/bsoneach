@@ -1,4 +1,4 @@
-defmodule EachBench do
+defmodule IterativeBench do
   use Benchfella
 
   defp get_fixtures do
@@ -44,36 +44,6 @@ defmodule EachBench do
     |> BSONEach.File.open
     |> BSONEach.each(&foo/1)
     |> File.close
-  end
-
-  bench "stream and iterate 1 document", [fixtures: get_fixtures()] do
-    fixtures[:single]
-    |> BSONEach.File.stream
-    |> BSONEach.each(&foo/1)
-  end
-
-  bench "stream and iterate 30 documents", [fixtures: get_fixtures()] do
-    fixtures[:small]
-    |> BSONEach.File.stream
-    |> BSONEach.each(&foo/1)
-  end
-
-  bench "stream and iterate 300 documents", [fixtures: get_fixtures()] do
-    fixtures[:medium]
-    |> BSONEach.File.stream
-    |> BSONEach.each(&foo/1)
-  end
-
-  bench "stream and iterate 3_000 documents", [fixtures: get_fixtures()] do
-    fixtures[:large]
-    |> BSONEach.File.stream
-    |> BSONEach.each(&foo/1)
-  end
-
-  bench "stream and iterate 30_000 documents", [fixtures: get_fixtures()] do
-    fixtures[:xlarge]
-    |> BSONEach.File.stream
-    |> BSONEach.each(&foo/1)
   end
 
   def foo(_) do

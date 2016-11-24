@@ -21,3 +21,6 @@ bench/snapshots
 
 # Don't commit largest fixture
 test/fixtures/1000000.bson
+
+# MacOS Specifics
+.DS_store

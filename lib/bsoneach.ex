@@ -21,8 +21,7 @@ defmodule BSONEach do
       end
 
   """
-
-  @buf_size 65_535 # Read files by 64 KB by-default
+  import BSONEach.Iterative
 
   @doc """
   This method allows to apply ```callback``` function to each document in a BSON file.
@@ -62,65 +61,8 @@ defmodule BSONEach do
     iterate(io, <<>>, func)
   end
 
-  defp iterate(io, buf, func, index \\ 0)
-
-  defp iterate(io, <<size::32-little-signed, _::binary>> = acc, func, index) when byte_size(acc) == size do
-    case decode(acc, func) do
-      {:ok, _} -> iterate(io, <<>>, func, index)
-      error -> error
-    end
-  end
-
-  defp iterate(io, <<size::32-little-signed, _::binary>> = acc, func, index) when byte_size(acc) > size do
-    <<doc::binary-size(size), next::binary>> = acc
-
-    case decode(doc, func) do
-      {:ok, _} -> iterate(io, next, func, index)
-      error -> error
-    end
-  end
-
-  defp iterate({:file_descriptor, :prim_file, _} = io, <<_::binary>> = acc, func, _) do
-    case IO.binread(io, @buf_size) do
-      data when is_binary(data) ->
-        iterate(io, acc <> data, func)
-      :eof ->
-        io
-      {:error, reason} ->
-        {:io_error, reason}
-    end
-  end
-
-  defp iterate(%File.Stream{} = io, <<_::binary>> = acc, func, index) do
-    case Enum.at(io, index, :none) do
-      data when is_binary(data) ->
-        iterate(io, acc <> data, func, index + 1)
-      ^index ->
-        io
-    end
-  end
-
-  defp decode(acc, func) do
-    res = try do
-      BSON.Decoder.decode(acc)
-    rescue
-      _ -> {:parse_error, :corrupted_document}
-    end
-
-    case res do
-      %{} = doc ->
-        apply_callback(doc, func)
-      {:parse_error, reason} ->
-        {:parse_error, reason}
-      {:error, _} ->
-        {:parse_error, :corrupted_document}
-    end
-  end
-
-  defp apply_callback(doc, func) do
-    case func.(doc) do
-      :stop -> {:error, :callback_canceled}
-      _ -> {:ok, :applied}
-    end
-  end
+  @doc """
+  See `BSONEach.Stream.resource/1`.
+  """
+  defdelegate stream(path, on_corrupted \\ :stop), to: BSONEach.Stream, as: :resource
 end
