@@ -1,10 +1,9 @@
 defmodule BSONEach.Stream do
-  import BSONEach.Reader
-  import BSONEach.File
-
   @moduledoc """
   This module creates stream of Elixir structures from a BSON file with one or many documents.
   """
+  import BSONEach.Reader
+  import BSONEach.File
 
   @doc """
   Create a documents stream from batch to BSON file.
@@ -17,17 +16,17 @@ defmodule BSONEach.Stream do
     up to `file_size/4` reads from corrupted file. Also, Enum length will not correspond to real documents count.
     * `:report` - same as `:skip` but errors with their reasons will be returned as Stream elements.
   """
-  @spec resource(File.Path.t, atom) :: Stream.t
+  @spec resource(Path.t, atom) :: Enum.t
   def resource(path, on_corrupted \\ :stop) do
-    path
-    |> open
-    |> from_iostream(on_corrupted)
+    case File.exists?(path) do
+      true -> stream(path, on_corrupted)
+      false -> {:error, :enoent}
+    end
   end
 
-  defp from_iostream({:error, reason}, _on_corrupted), do: {:error, reason}
-  defp from_iostream({:ok, io_stream}, on_corrupted) do
+  defp stream(path, on_corrupted) do
     Stream.resource(
-      fn -> io_stream end,
+      fn -> path |> open() end,
       &stream_reader(&1, on_corrupted),
       &close/1
     )
