@@ -94,7 +94,7 @@ It's available on [hex.pm](https://hex.pm/packages/bsoneach) and can be installe
 
     ```elixir
     def deps do
-      [{:bsoneach, "~> 0.4.0"}]
+      [{:bsoneach, "~> 0.4.1"}]
     end
     ```
 
